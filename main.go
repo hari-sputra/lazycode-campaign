@@ -1,9 +1,11 @@
 package main
 
 import (
+	"lazycodecampaign/handler"
 	"lazycodecampaign/user"
 	"log"
 
+	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -19,12 +21,10 @@ func main() {
 	userRepository := user.NewRepository(db)
 	userService := user.NewService(userRepository)
 
-	userInput := user.RegisterUserInput{}
+	userHandler := handler.NewUserHandler(userService)
 
-	userInput.Name = "hari user"
-	userInput.Occupation = "technician"
-	userInput.Email = "user.hari@gmail.com"
-	userInput.Password = "123123"
-
-	userService.RegisterUser(userInput)
+	router := gin.Default()
+	api := router.Group("/api/v1")
+	api.POST("/users", userHandler.RegisterUser)
+	router.Run()
 }
